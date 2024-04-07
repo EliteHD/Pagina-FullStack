@@ -1,18 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/dashboard/Home'
+import UserForm from './pages/dashboard/users/UserForm'
+import Menu from './components/Navbar'
+
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div className='bg-slate-500 rounded-full shadow-xl '>
-        <h1 className='text-2xl text-center text-white'>Hola Mundo</h1>
-      </div>
-
-    </>
+    <BrowserRouter>
+      <Menu />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path='/dashboard/newUser' element={<UserForm />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
