@@ -3,6 +3,7 @@ const bodyParser = require("body-parser"); //ayuda a analizar la solicitud y cre
 const cors = require("cors"); //proporciona middleware Express para habilitar CORS con varias opciones.
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+const cookieParser = require('cookie-parser');
 
 
 // cree una aplicación Express
@@ -15,6 +16,8 @@ var corsOptions = {
 
 // realizar parse de content-type - application/json de requests 
 app.use(bodyParser.json());
+app.use(cookieParser());
+
 app.use(cors());
 app.use(morgan('dev'));
 

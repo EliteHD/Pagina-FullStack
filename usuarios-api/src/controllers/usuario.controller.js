@@ -10,35 +10,48 @@ const app = express();
 app.set("llave", config.llave);
 
 // Crear y Guardar un nuevo Usuario
-exports.create = async (req, res) => {
-  try {
-    const usuarioExistente = await Usuario.findOne({ where: { correo: req.body.correo } });
-    if (usuarioExistente) {
-      return res.status(400).send({
-        mensaje: "Correo existente"
+exports.create = (req, res) => {
+  Usuario.findOne({ where: { correo: req.body.correo } })
+    .then(usuario => {
+      if (usuario) {
+        res.status(400).send({
+          mensaje: "Correo existente"
+        });
+        return;
+      } else {
+        const passwordHash = bcrypt.hashSync(req.body.contrasenia, 10);
+
+        const usuario = {
+          correo: req.body.correo,
+          contrasenia: passwordHash,
+          estatus: req.body.estatus,
+          fechaRegistro: req.body.fechaRegistro,
+          fechaVigencia: req.body.fechaVigencia,
+          persona_id: req.body.persona_id,
+          rol_id: req.body.rol_id
+        };
+
+        Usuario.create(usuario)
+          .then(usuario => {
+            res.status(200).send(usuario);
+          })
+          .catch(err => {
+            res.status(500).send({
+              mensaje:
+                err.message || "Ocurrio un error al crear Rol."
+            });
+            //res.status(500).sendFile(path.join(__dirname, '../source/img', 'error.png'));
+          });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        mensaje: "Error al recuperar Usuario por correo"
       });
-    }
-
-    // Crear un Usuario
-    const passwordHash = await bcrypt.hash(req.body.contrasenia, 10);
-    const usuario = {
-      nombre: req.body.nombre,
-      apepat: req.body.apepat,
-      apemat: req.body.apemat,
-      correo: req.body.correo,
-      telefono: req.body.telefono,
-      contrasenia: passwordHash,
-      birthdate: req.body.birthdate,
-    };
-
-    // Guardar Usuario en la base de datos
-    const nuevoUsuario = await Usuario.create(usuario);
-    res.status(200).send(nuevoUsuario);
-  } catch (err) {
-    console.error(err);
-    res.status(500).sendFile(path.join(__dirname, '../source/img', 'error.png'));
-  }
+    });
 };
+
+
 
 
 // Recuperar todos los Usuarios de la base de datos
@@ -56,40 +69,40 @@ exports.findAll = async (req, res) => {
 
 
 // //Buscar Usuario por Id
-// exports.findOne = (req, res) => {
-//   const id = req.params.id;
-//   Usuario.findByPk(id, {
-//     include: [
-//       {
-//         model: db.rol,
-//       },
-//     ],
-//   })
-//     .then(usuario => {
-//       res.status(200).send(usuario);
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         mensaje: "Error al recuperar Usuarios por id=" + id
-//       });
-//     });
-// };
-
-//Buscar Usuario por Id
-exports.findOne = async (req, res) => {
-  try {
-    const usuario = await Usuario.findByPk(req.params.id);
-    if (!usuario) {
-      return res.status(404).send({ mensaje: "Usuario no encontrado" });
-    }
-    res.status(200).send(usuario);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({
-      mensaje: "Error al recuperar Usuario por id=" + req.params.id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+  Usuario.findByPk(id, {
+    include: [
+      {
+        model: db.rol,
+      },
+    ],
+  })
+    .then(usuario => {
+      res.status(200).send(usuario);
+    })
+    .catch(err => {
+      res.status(500).send({
+        mensaje: "Error al recuperar Usuarios por id=" + id
+      });
     });
-  }
 };
+
+// //Buscar Usuario por Id
+// exports.findOne = async (req, res) => {
+//   try {
+//     const usuario = await Usuario.findByPk(req.params.id);
+//     if (!usuario) {
+//       return res.status(404).send({ mensaje: "Usuario no encontrado" });
+//     }
+//     res.status(200).send(usuario);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send({
+//       mensaje: "Error al recuperar Usuario por id=" + req.params.id
+//     });
+//   }
+// };
 
 // Actualizar Usuario por Id
 exports.update = async (req, res) => {

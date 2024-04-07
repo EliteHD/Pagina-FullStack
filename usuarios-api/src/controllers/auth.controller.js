@@ -49,7 +49,14 @@ const login = async (req, res) => {
     const { correo, contrasenia } = req.body;
 
     try {
-        const user = await Usuario.findOne({ where: { correo } });
+        // Asegúrate de incluir el modelo Rol en la consulta para tener acceso a la información del rol
+        const user = await Usuario.findOne({
+            where: { correo },
+            include: [{
+                model: db.rol,
+            }]
+        });
+
         if (!user) {
             return res.status(400).json({ msg: 'Usuario no existe' });
         }
@@ -58,27 +65,31 @@ const login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ msg: 'Contraseña inválida' });
         }
-
-        jwt.sign(
-            { id: user.id },
+        const token = jwt.sign(
+            {
+                id: user.id,
+                rol: user.rol
+            },
             process.env.JWT_SECRET || 'secretjos',
-            { expiresIn: 3600 },
-            (err, token) => {
-                if (err) throw err;
-                res.cookie('token', token);
-                res.json({
-                    token,
-                    id: user.id,
-                    correo: user.correo,
-                    nombre: user.nombre
-                });
-            }
+            { expiresIn: 3600 }
         );
+
+        res.cookie('token', token, { httpOnly: true }); 
+        res.json({
+            token,
+            usuario: {
+                id: user.id,
+                correo: user.correo,
+                nombre: user.nombre,
+                rol: user.rol
+            }
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error al iniciar sesión' });
     }
 };
+
 
 const logout = (req, res) => { 
     res.clearCookie('token');
@@ -87,18 +98,27 @@ const logout = (req, res) => {
 
 const profile = async (req, res) => {
     try {
-        const user = await Usuario.findByPk(req.user.id);
+        const user = await Usuario.findByPk(req.user.id, {
+            include: [{
+                model: db.rol,
+            }]
+        });
         if (!user) return res.status(404).json({ msg: 'Usuario no encontrado' });
-
         return res.json({
             id: user.id,
             correo: user.correo,
-            nombre: user.nombre
+            nombre: user.nombre,
+            apepat: user.apepat,
+            apemat: user.apemat,
+            telefono: user.telefono,
+            birthdate: user.birthdate,
+            rol: user.rol 
         });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Error al obtener perfil' });
     }
 };
+
 
 module.exports = { register, login, logout, profile };

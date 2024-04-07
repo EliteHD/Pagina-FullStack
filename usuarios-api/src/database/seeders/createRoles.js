@@ -1,34 +1,32 @@
-module.exports = async function createRoles(sequelize) {
-  const { DataTypes } = require('sequelize');
+const db = require('../../models'); // Importa el modelo de Usuario y Rol
+const Rol = db.rol;
 
-  const Rol = sequelize.define("rol", {
-    nombre: {
-      type: DataTypes.STRING
-    },
-    descripcion: {
-      type: DataTypes.STRING
-    }
-  });
-
+module.exports = async function createRoles() {
   try {
+    // Define los roles que deseas crear
     const rolesToCreate = [
       { nombre: 'administrador', descripcion: 'Rol de administrador' },
       { nombre: 'usuario', descripcion: 'Rol de usuario' },
-      { nombre: 'nuevoRol', descripcion: 'Nuevo rol agregado' },
-      { nombre: 'nuevoRol2', descripcion: 'Nuevo rol agregado'},
-      { nombre: 'nuevoRol3', descripcion: 'Nuevo rol agregado' },
-
     ];
 
-    const existingRoles = await Rol.findAll();
+    // Verifica si cada rol ya existe en la base de datos
+    const existingRoles = await Rol.findAll({ where: { nombre: rolesToCreate.map(role => role.nombre) } });
 
-    const rolesToInsert = rolesToCreate.filter(role => {
-      return !existingRoles.some(existingRole => existingRole.nombre === role.nombre);
-    });
+    // Filtra los roles que no existen en la base de datos
+    const newRolesToCreate = rolesToCreate.filter(role => !existingRoles.find(existingRole => existingRole.nombre === role.nombre));
 
-    await Rol.bulkCreate(rolesToInsert);
+    if (newRolesToCreate.length === 0) {
+      console.log("No new roles to create.");
+      return;
+    }
 
-    console.log("Roles created successfully.");
+    // Crea los roles nuevos en la base de datos
+    await Rol.bulkCreate(newRolesToCreate);
+    console.log("\n::::::::::::::::::::::::::::::::::::");
+    console.log("New roles created successfully.");
+    console.log("::::::::::::::::::::::::::::::::::::");
+
+    
   } catch (error) {
     console.error("Error creating roles:", error);
     throw error;

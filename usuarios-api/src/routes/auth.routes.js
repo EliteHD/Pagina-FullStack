@@ -1,4 +1,3 @@
-// Suponiendo que las rutas estén en 'routes/usuarioRoutes.js' y la estructura de archivos sea adecuada.
 const usuarioSchema = require("../schemas/auth.schema");
 const validatorMiddleware = require("../middleware/validator.middleware");
 const authRequired = require("../middleware/validateToken");
