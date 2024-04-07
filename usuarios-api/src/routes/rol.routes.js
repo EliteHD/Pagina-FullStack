@@ -12,7 +12,7 @@ module.exports = app => {
     router.get("/rol/:id", authRequired, isAdmin, rol.findOne); //http://localhost:9595/api/rol/[id]
 
     router.delete("/rol/:id", authRequired, isAdmin, rol.delete); //http://localhost:9595/api/rol/[id]
-    router.delete("/rolesAll", authRequired, isAdmin, rol.deleteAll); //http://localhost:9595/api/rolesAll/
+    router.delete("/rolesDeleteAll", authRequired, isAdmin, rol.deleteAll); //http://localhost:9595/api/rolesAll/
 
     app.use('/api', router);
 };

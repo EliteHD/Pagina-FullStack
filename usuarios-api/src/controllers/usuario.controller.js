@@ -162,14 +162,15 @@ exports.deleteAll = (req, res) => {
     truncate: false
   })
     .then(nums => {
-      res.status(200).send({ mensaje: `${nums} Usuarios fueron eliminados con exito!` });
+      res.send({ mensaje: `${nums} Usuarios eliminados con exito!` });
     })
     .catch(err => {
       res.status(500).send({
         mensaje:
-          err.message || "Error al eliminar Usuarios."
+          err.message || "Ocurrio un error al eliminar todos los Usuarios."
       });
-      //res.status(500).sendFile(path.join(__dirname, '../source/img', 'error.png'));
     });
 };
+
+
 

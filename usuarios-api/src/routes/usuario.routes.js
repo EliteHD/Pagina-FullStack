@@ -17,7 +17,7 @@ module.exports = app => {
     router.get("/usuarios/:id", authRequired, isAdmin, usuario.findOne); //http://localhost:9595/api/usuarios/1
 
     router.delete("/usuarios/:id", authRequired, isAdmin, usuario.delete); //http://localhost:9595/api/usuarios/1
-    router.delete("/usuarios/eliminar", authRequired, isAdmin, usuario.deleteAll);
+    router.delete("/usuariosDeleteAll", authRequired, isAdmin, usuario.deleteAll); //http://localhost:9595/api/usuarios/deleteAll
 
     //router.post('/registrar', usuario.create); //http://localhost:9595/api/usuario/registrar
 

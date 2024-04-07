@@ -121,4 +121,21 @@ const profile = async (req, res) => {
 };
 
 
-module.exports = { register, login, logout, profile };
+
+const refresh = (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({ msg: 'No autorizado' });
+    }
+    jwt.verify(token, process.env.JWT_SECRET || 'secretjos', (err, user) => {
+        if (err) {
+            return res.status(401).json({ msg: 'No autorizado' });
+        }
+        const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET || 'secretjos', { expiresIn: 3600 });
+        res.cookie('token', newToken, { httpOnly: true });
+        res.json({ token: newToken });
+    });
+};
+
+
+module.exports = { register, login, logout, profile, refresh };
