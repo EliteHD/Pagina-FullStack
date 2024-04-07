@@ -11,7 +11,7 @@ module.exports = app => {
     router.get("/rol/:id", authRequired, rol.findOne); //http://localhost:9595/api/rol/[id]
 
     router.delete("/rol/:id", authRequired, rol.delete); //http://localhost:9595/api/rol/[id]
-    router.delete("/rolesALL", authRequired, rol.deleteAll); //http://localhost:9595/api/rolesALL/
+    router.delete("/rolesAll", authRequired, rol.deleteAll); //http://localhost:9595/api/rolesAll/
 
     app.use('/api', router);
 };
