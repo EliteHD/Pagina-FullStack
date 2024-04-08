@@ -13,7 +13,7 @@ const usuarioSchema = z.object({
     correo: z.string().email({
         message: "Correo must be a valid email"
     }),
-    telefono: z.string().min(10, {
+    telefono: z.string().min(4, {
         message: "Telefono must be at least 10 digits long"
     }).or(z.undefined()),
     contrasenia: z.string().min(6, {
