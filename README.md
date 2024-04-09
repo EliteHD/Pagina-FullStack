@@ -27,6 +27,13 @@ Antes de iniciar, ejecuta los siguientes seeders para crear Roles y Usuarios por
 1. Generar Roles: `npm run db:seed createRoles`
 2. Generar Usuarios: `npm run db:seed createUsers`
 
+## Usuarios para probar login
+Correo: admin@example.com
+Password: admin123
+
+Correo: user@example.com
+Password: user123
+
 ### Iniciar Servidores
 Para iniciar los servidores, ejecuta los siguientes comandos:
 
