@@ -234,6 +234,7 @@ function Home() {
                         </Typography>
                       </td>
                       <td className="p-4">
+                        
                         <Tooltip content="Editar Usuario">
                           <IconButton variant="text" onClick={() => handleOpenModal({ id, nombre, apepat, apemat, correo, contrasenia, telefono, birthdate, rol })}>
                             <PencilIcon className="h-4 w-4" />

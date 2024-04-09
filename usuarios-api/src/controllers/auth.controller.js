@@ -27,7 +27,7 @@ const register = async (req, res) => {
         jwt.sign(
             { id: newUser.id },
             process.env.JWT_SECRET || 'secretjos',
-            { expiresIn: 3600 },
+            { expiresIn: '1d' },
             (err, token) => {
                 if (err) console.error(err);
                 res.cookie('token', token);
@@ -72,7 +72,7 @@ const login = async (req, res) => {
                 rol: user.rol
             },
             process.env.JWT_SECRET || 'secretjos',
-            { expiresIn: 3600 }
+            { expiresIn: '1d' }
         );
 
         res.cookie('token', token, { httpOnly: true }); 
@@ -89,7 +89,7 @@ const login = async (req, res) => {
         console.error(err);
         //show message error
         res.status(500).json({ error: 'Error al iniciar sesión' });
-        
+
 
         
     }
@@ -136,7 +136,7 @@ const refresh = (req, res) => {
         if (err) {
             return res.status(401).json({ msg: 'No autorizado' });
         }
-        const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET || 'secretjos', { expiresIn: 3600 });
+        const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET || 'secretjos', { expiresIn: '1d' });
         res.cookie('token', newToken, { httpOnly: true });
         res.json({ token: newToken });
     });
