@@ -16,7 +16,7 @@ import RolServicios from "../../../../services/RolServicios";
 import UsuarioServicios from "../../../../services/UsuarioServicios";
 import { useAlert } from "../../../../providers/AlertContext";
 
-function ModalFormUser({ isOpen, onClose, userData }) {
+function ModalFormUser({ isOpen, onClose, userData, onSave  }) {
 
     const [isEditing, setIsEditing] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -99,6 +99,7 @@ function ModalFormUser({ isOpen, onClose, userData }) {
                 response = await UsuarioServicios.create(formData);
                 showAlert("Usuario creado con éxito", "success");
             }
+            onSave(response.data); // Llamar a onSave con los datos actualizados
             onClose();
             resetFormData();
         } catch (error) {

@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import AuthServicios from '../services/AuthServicios'; 
+import AuthServicios from '../services/AuthServicios';
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const verifyUser = async () => {
@@ -27,12 +27,13 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('currentUser', JSON.stringify(response.data.usuario));
         setCurrentUser(response.data.usuario);
+        window.location.reload();
       }
     } catch (error) {
       console.error('Error al intentar iniciar sesión', error);
       throw error;
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -40,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     setCurrentUser(null);
-    setIsLoading(false); 
+    setIsLoading(false);
   };
 
   const value = {

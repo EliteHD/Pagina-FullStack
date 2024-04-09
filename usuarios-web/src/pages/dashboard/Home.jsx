@@ -61,6 +61,43 @@ function Home() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingUserData, setEditingUserData] = useState(null);
   const [users, setUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState('');
+
+
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const filteredItems = users.filter((user) => {
+    const searchRegex = new RegExp(searchTerm, 'i');
+    return (
+      searchRegex.test(user.nombre) ||
+      searchRegex.test(user.correo) ||
+      searchRegex.test(user.apepat) ||
+      searchRegex.test(user.apemat) ||
+      searchRegex.test(user.rol?.nombre) // Verificar si el rol tiene un nombre y si coincide con la búsqueda
+
+    );
+  });
+
+
+
 
   useEffect(() => {
     fetchUsers();
@@ -75,6 +112,7 @@ function Home() {
       console.error("Error fetching users:", error);
     }
   };
+
 
   const handleOpenModal = (userData = null) => {
     setIsModalOpen(true);
@@ -93,10 +131,14 @@ function Home() {
     setEditingUserData(null);
   };
 
-  const handleSaveUser = (userData) => {
-    console.log(userData);
-    handleCloseModal();
+  const handleSaveUser = async (userData) => {
+    try {
+      await fetchUsers();
+    } catch (error) {
+      console.error("Error updating users after save:", error);
+    }
   };
+
 
   return (
     <>
@@ -119,7 +161,11 @@ function Home() {
                 <Input
                   label="Search"
                   icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                <p className="text-xs text-center text-gray-400">Nombre, Rol, Correo, Apellido Paterno o Materno</p>
+
               </div>
             </div>
           </CardHeader>
@@ -147,60 +193,68 @@ function Home() {
                 </tr>
               </thead>
               <tbody>
-                {users.map(({ id, nombre, apepat, apemat, correo, contrasenia, telefono, birthdate, rol }) => (
-                  <tr key={id}>
-                    <td className="p-4 ">
-                      <div className="flex items-center gap-3 ">
-                        <Avatar src={generateAvatar(nombre)} alt={nombre} size="sm" />
-                        <div className="flex flex-col">
-                          <Typography variant="small" color="blue-gray" className="font-normal">
-                            {nombre ? nombre : ""} {apepat ? apepat : ""} {apemat ? apemat : ""}
-                          </Typography>
-                          <Typography variant="small" color="blue-gray" className="font-normal opacity-70">
-                            {correo ? correo : "Sin Correo"}
-                          </Typography>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4 text-center ">
-                      <Chip
-                        variant="ghost"
-                        size="sm"
-                        value={rol.nombre ? rol.nombre : "Sin Rol"}
-                        color="green"
-                      />
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" color="blue-gray" className="font-normal">
-                        {telefono ? telefono : "Sin Teléfono"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" color="blue-gray" className="font-normal">
-                        {birthdate ? birthdate : "Sin Fecha de Nacimiento"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Tooltip content="Editar Usuario">
-                        <IconButton variant="text" onClick={() => handleOpenModal({ id, nombre, apepat, apemat, correo, contrasenia, telefono, birthdate, rol })}>
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
+                {filteredItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={TABLE_HEAD.length} className="p-4 text-center">
+                      <Typography variant="body2">Sin usuarios</Typography>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredItems.slice(indexOfFirstItem, indexOfLastItem).map(({ id, nombre, apepat, apemat, correo, contrasenia, telefono, birthdate, rol }) => (
+                    <tr key={id}>
+                      <td className="p-4 ">
+                        <div className="flex items-center gap-3 ">
+                          <Avatar src={generateAvatar(nombre)} alt={nombre} size="sm" />
+                          <div className="flex flex-col">
+                            <Typography variant="small" color="blue-gray" className="font-normal">
+                              {nombre ? nombre : ""} {apepat ? apepat : ""} {apemat ? apemat : ""}
+                            </Typography>
+                            <Typography variant="small" color="blue-gray" className="font-normal opacity-70">
+                              {correo ? correo : "Sin Correo"}
+                            </Typography>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 text-center ">
+                        <Chip
+                          variant="ghost"
+                          size="sm"
+                          value={rol.nombre ? rol.nombre : "Sin Rol"}
+                          color="green"
+                        />
+                      </td>
+                      <td className="p-4">
+                        <Typography variant="small" color="blue-gray" className="font-normal">
+                          {telefono ? telefono : "Sin Teléfono"}
+                        </Typography>
+                      </td>
+                      <td className="p-4">
+                        <Typography variant="small" color="blue-gray" className="font-normal">
+                          {birthdate ? birthdate : "Sin Fecha de Nacimiento"}
+                        </Typography>
+                      </td>
+                      <td className="p-4">
+                        <Tooltip content="Editar Usuario">
+                          <IconButton variant="text" onClick={() => handleOpenModal({ id, nombre, apepat, apemat, correo, contrasenia, telefono, birthdate, rol })}>
+                            <PencilIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </CardBody>
           <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
             <Typography variant="small" color="blue-gray" className="font-normal">
-              Page 1 of 10
+              Page {currentPage} of {totalPages}
             </Typography>
             <div className="flex gap-2">
-              <Button variant="outlined" size="sm">
+              <Button variant="outlined" size="sm" onClick={handlePrevPage}>
                 Previous
               </Button>
-              <Button variant="outlined" size="sm">
+              <Button variant="outlined" size="sm" onClick={handleNextPage}>
                 Next
               </Button>
             </div>
