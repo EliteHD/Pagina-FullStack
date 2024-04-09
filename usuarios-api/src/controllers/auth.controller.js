@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const register = async (req, res) => {
-    const { nombre, apepat, apemat, correo, telefono, contrasenia, birthdate } = req.body;
+    const { nombre, apepat, apemat, correo, telefono, contrasenia, birthdate, rol_id } = req.body;
 
     try {
         const userExists = await Usuario.findOne({ where: { correo } });
@@ -20,7 +20,8 @@ const register = async (req, res) => {
             correo,
             telefono,
             contrasenia: passwordHash,
-            birthdate
+            birthdate,
+            rol_id
         });
 
         jwt.sign(
@@ -86,7 +87,11 @@ const login = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
+        //show message error
         res.status(500).json({ error: 'Error al iniciar sesión' });
+        
+
+        
     }
 };
 

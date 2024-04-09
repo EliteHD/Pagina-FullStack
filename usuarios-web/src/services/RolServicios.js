@@ -1,4 +1,3 @@
-// ROL SERVICE CRUD TO POSTGRESQL
 import http from "../http-common";
 
 class RolServicios {

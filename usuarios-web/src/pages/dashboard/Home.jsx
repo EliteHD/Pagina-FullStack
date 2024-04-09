@@ -154,10 +154,10 @@ function Home() {
                         <Avatar src={generateAvatar(nombre)} alt={nombre} size="sm" />
                         <div className="flex flex-col">
                           <Typography variant="small" color="blue-gray" className="font-normal">
-                            {nombre} {apepat} {apemat}
+                            {nombre ? nombre : ""} {apepat ? apepat : ""} {apemat ? apemat : ""}
                           </Typography>
                           <Typography variant="small" color="blue-gray" className="font-normal opacity-70">
-                            {correo}
+                            {correo ? correo : "Sin Correo"}
                           </Typography>
                         </div>
                       </div>
@@ -166,18 +166,18 @@ function Home() {
                       <Chip
                         variant="ghost"
                         size="sm"
-                        value={rol.nombre}
+                        value={rol.nombre ? rol.nombre : "Sin Rol"}
                         color="green"
                       />
                     </td>
                     <td className="p-4">
                       <Typography variant="small" color="blue-gray" className="font-normal">
-                        {telefono}
+                        {telefono ? telefono : "Sin Teléfono"}
                       </Typography>
                     </td>
                     <td className="p-4">
                       <Typography variant="small" color="blue-gray" className="font-normal">
-                        {birthdate}
+                        {birthdate ? birthdate : "Sin Fecha de Nacimiento"}
                       </Typography>
                     </td>
                     <td className="p-4">

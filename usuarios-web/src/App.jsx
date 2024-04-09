@@ -7,26 +7,38 @@ import Footer from './components/Footer'
 import { AuthProvider } from './providers/AuthContext'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import PrivateRoute from './router/PrivateRoute'
+import Mantenimiento from './components/Mantenimiento'
+import PublicRoute from './router/PublicRoute'
+import { AlertProvider } from './providers/AlertContext'
+import { Notification } from './components/Notification'
+
 
 function App() {
-
+  
+ 
   return (
+
     <AuthProvider>
-      <BrowserRouter>
-        <Menu />
-        <Container>
+      <AlertProvider>
+        <BrowserRouter>
+          <Menu />
+          <Notification />
+          <Container>
+            <Routes>
+              <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+              <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+              <Route path="/dashboard" element={<PrivateRoute><Home /></PrivateRoute>} />
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path='/dashboard' element={<Home />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Register />} />
+              <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+              <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+              <Route exact path='*' element={<Mantenimiento />} />
 
-            <Route path='/dashboard/newUser' element={<UserForm />} />
-          </Routes>
-        </Container>
-        <Footer />
-      </BrowserRouter>
+            </Routes>
+          </Container>
+          <Footer />
+        </BrowserRouter>
+      </AlertProvider>
     </AuthProvider>
 
   )

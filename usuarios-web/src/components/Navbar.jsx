@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '../providers/AuthContext'; // Asegúrate de ajustar la ruta si es necesario
+import { useAuth } from '../providers/AuthContext';
 
 function Navbar() {
   const { currentUser, logout } = useAuth();
@@ -46,17 +46,20 @@ function Navbar() {
                 {currentUser ? (
                   <Menu as="div" className="ml-3 relative">
                     <div>
-                      {/* Muestra el correo del usuario logueado y un botón para cerrar sesión */}
                       <Menu.Button className="flex text-sm rounded-full focus:outline-none">
                         <span className="sr-only">Open user menu</span>
-                        <span className="text-white">{currentUser.email}</span>
+                        <div className='flex flex-row gap-2'>
+                          <span className="text-white">Bienvenido,</span>
+                          <span className="text-white">{currentUser.nombre}</span>
+                        </div>
+
                       </Menu.Button>
                     </div>
                     <Transition as={Fragment} enter="transition ease-out duration-100" enterFrom="transform opacity-0 scale-95" enterTo="transform opacity-100 scale-100" leave="transition ease-in duration-75" leaveFrom="transform opacity-100 scale-100" leaveTo="transform opacity-0 scale-95">
                       <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
-                            <a href="#" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')} onClick={logout}>
+                            <a href="/login" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')} onClick={logout}>
                               Cerrar Sesión
                             </a>
                           )}

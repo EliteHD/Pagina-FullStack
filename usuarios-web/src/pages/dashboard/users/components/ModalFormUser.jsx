@@ -14,12 +14,16 @@ import {
 import { UserPlusIcon } from "@heroicons/react/24/solid";
 import RolServicios from "../../../../services/RolServicios";
 import UsuarioServicios from "../../../../services/UsuarioServicios";
+import { useAlert } from "../../../../providers/AlertContext";
 
 function ModalFormUser({ isOpen, onClose, userData }) {
+
     const [isEditing, setIsEditing] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [roles, setRoles] = useState([]);
-    const [rolActual, setRolActual] = useState(""); // Estado para almacenar el nombre del rol actual
+    const [rolActual, setRolActual] = useState("");
+
+    const { showAlert } = useAlert();
 
     const [formData, setFormData] = useState({
         nombre: "",
@@ -29,28 +33,27 @@ function ModalFormUser({ isOpen, onClose, userData }) {
         contrasenia: "",
         telefono: "",
         birthdate: "",
-        rol_id: "", // Inicializado como vacío
+        rol_id: "",
     });
 
     useEffect(() => {
         const fetchRoles = async () => {
             try {
                 const response = await RolServicios.getAll();
-                setRoles(response.data); // Almacena los roles en el estado local
+                setRoles(response.data);
             } catch (error) {
                 console.error("Error fetching roles:", error);
             }
         };
 
-        fetchRoles(); // Al cargar el componente, obtén los roles disponibles
+        fetchRoles();
         if (userData) {
             setIsEditing(true);
-            // Aquí debes asegurarte de desestructurar userData y asignar el rol_id correctamente
             setFormData({
                 ...userData,
-                rol_id: userData.rol?.id || '', // Asume que userData.rol contiene el objeto del rol con una propiedad id
+                rol_id: userData.rol?.id || '',
             });
-            setRolActual(userData.rol.nombre); // Almacena el nombre del rol actual
+            setRolActual(userData.rol.nombre);
 
         } else {
             setIsEditing(false);
@@ -73,18 +76,12 @@ function ModalFormUser({ isOpen, onClose, userData }) {
 
     const handleChange = (e) => {
         let name, value;
-
-        // Verifica si el evento es un objeto Event estándar
         if (e.target) {
-            // Evento estándar de un input o select HTML
             ({ name, value } = e.target);
         } else {
-            // Para componentes personalizados que no usan un evento estándar
-            // Asume que e es el valor directo y que este caso se maneja para el select de roles
             name = "rol_id";
             value = e;
         }
-
         setFormData(prevState => ({
             ...prevState,
             [name]: value,
@@ -93,17 +90,27 @@ function ModalFormUser({ isOpen, onClose, userData }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Datos a enviar:", formData); // Para depuración
-
         try {
-            const response = await UsuarioServicios.create(formData);
-            console.log("Usuario creado:", response.data);
-            onClose(); // Cerrar el modal
-            resetFormData(); // Resetear el formulario después de enviar
+            let response;
+            if (isEditing) {
+                response = await UsuarioServicios.update(userData.id, formData);
+                showAlert("Usuario actualizado con éxito", "success");
+            } else {
+                response = await UsuarioServicios.create(formData);
+                showAlert("Usuario creado con éxito", "success");
+            }
+            onClose();
+            resetFormData();
         } catch (error) {
-            console.error("Error al crear usuario:", error);
+            console.error("Error al procesar el formulario:", error);
+            let errorMessage = 'Error desconocido al intentar procesar el formulario.';
+            if (error.response && error.response.data) {
+                errorMessage = error.response.data.msg || error.response.data.message || error.response.data.error || 'Error al procesar la solicitud.';
+            }
+            showAlert(errorMessage, "error");
         }
     };
+
 
     return (
         <Dialog open={isOpen} onClose={onClose} className="p-7">
@@ -161,14 +168,12 @@ function ModalFormUser({ isOpen, onClose, userData }) {
                         <Input label="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} />
                         <Input label="Fecha de Nacimiento" type="date" name="birthdate" value={formData.birthdate} onChange={handleChange} />
                     </div>
-                     <Select label="Rol" value={formData.rol_id} onChange={handleChange} name="rol_id">
-                        {/* Opción para mostrar el nombre del rol actual */}
+                    <Select label="Rol" value={formData.rol_id} onChange={handleChange} name="rol_id">
                         {rolActual && (
                             <Option key={formData.rol_id} value={formData.rol_id}>
                                 {rolActual}
                             </Option>
                         )}
-                        {/* Resto de opciones de roles */}
                         {roles.map((rol) => (
                             <Option key={rol.id} value={rol.id}>
                                 {rol.nombre}
