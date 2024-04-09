@@ -37,4 +37,4 @@ Para iniciar los servidores, ejecuta los siguientes comandos:
 Actualmente, este proyecto no acepta contribuciones externas debido a que el código es privado. Sin embargo, si tienes sugerencias o comentarios, puedes enviarlos a través de la sección de Issues en este repositorio.
 
 ## Licencia
-La aplicación es de acceso público y gratuito, pero el código es privado. Se prohíbe la reproducción o modificación del código sin el consentimiento explícito del propietario. Para más detalles sobre la licencia, consulta el archivo [LICENSE](link-to-license-file).
+La aplicación es de acceso público y gratuito, pero el código es privado. Se prohíbe la reproducción o modificación del código sin el consentimiento explícito del propietario. Para más detalles sobre la licencia, consulta el archivo
